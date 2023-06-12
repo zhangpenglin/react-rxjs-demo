@@ -19,7 +19,9 @@ import {
   getUserss,
   login
 } from 'api/githubAPI'
+import { connect } from '@rxjs-insights/devtools/connect';
 
+connect();
 export const INITIAL_ORG = 'rails'
 export const INITIAL_REPO = 'rails'
 
