@@ -16,10 +16,18 @@ import {
   getRepoOpenIssuesCount,
   getIssue,
   getComments,
+  getUserss,
+  login
 } from 'api/githubAPI'
 
 export const INITIAL_ORG = 'rails'
 export const INITIAL_REPO = 'rails'
+
+const loginResultSubject$ = new Subject<string>()
+export const onLogin = () => {
+  loginResultSubject$.next()
+}
+
 
 const repoSubject$ = new Subject<{ org: string; repo: string }>()
 export const onLoadRepo = (org: string, repo: string) => {
@@ -38,6 +46,20 @@ export const onIssueSelected = (id: number) => {
 export const onIssueUnselecteed = () => {
   issueSelected$.next(null)
 }
+
+const showUsers$ = new Subject<boolean>()
+export const onShowUsers = () => {
+  showUsers$.next(true)
+}
+export const onHideUsers = () => {
+  showUsers$.next(false)
+}
+
+
+export const [useLoginResult, loginResult$] = bind(
+  loginResultSubject$.pipe(
+  )
+)
 
 export const [useCurrentRepo, currentRepo$] = bind(
   repoSubject$.pipe(
@@ -71,6 +93,10 @@ export const [useIssues, issues$] = bind(
   )
 )
 
+export const [useUsers, users$] = bind(
+  getUserss()
+)
+
 export const [useOpenIssuesLen, openIssuesLen$] = bind(
   currentRepo$.pipe(
     switchMap(({ org, repo }) =>
@@ -87,6 +113,10 @@ currentRepoAndPage$
 
 export const [useSelectedIssueId, selectedIssueId$] = bind(
   issueSelected$.pipe(startWith(null))
+)
+
+export const [useShowUsers, showUsersFlag$] = bind(
+  showUsers$.pipe(startWith(false))
 )
 
 export const [useIssue, issue$] = bind(

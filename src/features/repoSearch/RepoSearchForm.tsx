@@ -6,9 +6,14 @@ import {
   useCurrentPage,
   onLoadRepo,
   onPageChange,
+  onShowUsers,
   INITIAL_REPO,
   INITIAL_ORG,
 } from 'state'
+
+import {
+  login
+} from 'api/githubAPI'
 
 type InputEvent = ChangeEvent<HTMLInputElement>
 type ChangeHandler = (e: InputEvent) => void
@@ -36,6 +41,10 @@ export const RepoSearchForm: React.FC = () => {
     onLoadRepo(currentOrg, currentRepo)
   }
 
+  const onLoginClick = () => {
+    login()
+  }
+
   const onJumpToPageClicked = () => {
     const newPage = parseInt(currentPageText)
 
@@ -46,6 +55,24 @@ export const RepoSearchForm: React.FC = () => {
 
   return (
     <form className="pure-form">
+      <div style={{ display: 'flex' }}>
+        <button
+          type="button"
+          className="pure-button pure-button-primary"
+          style={{ marginLeft: 5 }}
+          onClick={onLoginClick}
+        >
+          Login
+        </button>
+        <button
+          type="button"
+          className="pure-button pure-button-primary"
+          style={{ marginLeft: 5 }}
+          onClick={onShowUsers}
+        >
+          show Users
+        </button>
+      </div>
       <div>
         <label htmlFor="org" style={{ marginRight: 5 }}>
           Org:

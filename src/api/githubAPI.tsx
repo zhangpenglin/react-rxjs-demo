@@ -3,6 +3,19 @@ import parseLink, { Links } from 'parse-link-header'
 import { map, pluck } from 'rxjs/operators'
 import { Observable } from 'rxjs'
 
+function getXsrfToken() {
+  const cookies = document.cookie.split(';')
+  for (let i = 0; i < cookies.length; i++) {
+    const cookie = cookies[i].trim()
+    if (cookie.startsWith('XSRF-TOKEN=')) {
+      return cookie.substring('XSRF-TOKEN='.length, cookie.length)
+    }
+  }
+  return null
+}
+
+console.log('getXsrfToken', getXsrfToken())
+
 export interface Label {
   id: number
   name: string
@@ -26,6 +39,16 @@ export interface Issue {
   comments: number
 }
 
+export type UserRole = 'SYSTEM' | 'SUPER_ADMIN' | 'VIEWER'
+
+export type UserItem = {
+  id: number
+  login: string
+  displayName: string
+  email: string
+  role: UserRole
+}
+
 export interface RepoDetails {
   id: number
   name: string
@@ -45,6 +68,10 @@ export interface IssuesResult {
   pageLinks: Links | null
   pageCount: number
   issues: Issue[]
+}
+
+export interface UsersResult {
+  users: UserItem[]
 }
 
 const isLastPage = (pageLinks: Links) => {
@@ -102,4 +129,37 @@ export function getIssue(org: string, repo: string, number: number) {
 
 export function getComments(url: string) {
   return ajax.getJSON<Comment[]>(url)
+}
+
+export function login() {
+  return ajax
+    .post(
+      '/api/authentication',
+      {
+        username: 'fet',
+        password: '@3jPR5mjnvq2!3g8Er',
+      },
+      {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-XSRF-TOKEN': getXsrfToken(),
+      }
+    )
+    .subscribe(
+      (response) => {
+        console.log('Login successful!', response)
+      },
+      (error) => {
+        console.error('Login failed!', error)
+      }
+    )
+}
+
+export function getUserss(): Observable<UsersResult> {
+  return ajax.get('/api/users').pipe(
+    map((r) => {
+      return {
+        users: r.response.content as UserItem[],
+      }
+    })
+  )
 }
